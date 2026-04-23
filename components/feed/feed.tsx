@@ -8,11 +8,10 @@ import type { SerializedPost } from "@/lib/serialize";
 type Props = {
   initialPosts: SerializedPost[];
   initialCursor: string | null;
-  canInteract: boolean;
   scope?: "home" | "following";
 };
 
-export function Feed({ initialPosts, initialCursor, canInteract, scope = "home" }: Props) {
+export function Feed({ initialPosts, initialCursor, scope = "home" }: Props) {
   const [posts, setPosts] = useState(initialPosts);
   const [cursor, setCursor] = useState(initialCursor);
   const [loading, setLoading] = useState(false);
@@ -71,7 +70,7 @@ export function Feed({ initialPosts, initialCursor, canInteract, scope = "home" 
       <ol className="flex flex-col divide-y divide-border/50">
         {posts.map((post) => (
           <li key={post._id}>
-            <PostCard post={post} canInteract={canInteract} />
+            <PostCard post={post} />
           </li>
         ))}
       </ol>

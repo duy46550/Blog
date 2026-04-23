@@ -1,15 +1,11 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { formatDistanceToNowStrict } from "date-fns";
-import { vi } from "date-fns/locale";
 import { connectDB } from "@/lib/db";
 import { User, type UserDoc } from "@/models/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { fetchFeed } from "@/lib/feed";
 import { Feed } from "@/components/feed/feed";
-import { FollowButton } from "@/components/profile/follow-button";
-import { getCurrentUser } from "@/lib/auth-helpers";
+import { formatDistanceToNowStrict } from "date-fns";
+import { vi } from "date-fns/locale";
 import type { Types } from "mongoose";
 
 type LeanUser = Omit<UserDoc, "_id"> & { _id: Types.ObjectId };
@@ -26,15 +22,11 @@ export default async function ProfilePage({
   if (!username) notFound();
 
   await connectDB();
-  const [profile, currentUser] = await Promise.all([
-    User.findOne({ username }).lean<LeanUser | null>(),
-    getCurrentUser(),
-  ]);
+  const profile = await User.findOne({ username }).lean<LeanUser | null>();
   if (!profile) notFound();
 
   const { posts, nextCursor } = await fetchFeed({
     filter: { author: profile._id },
-    currentUserId: currentUser?._id ?? null,
   });
 
   const initial = (profile.displayName || profile.username || "?").slice(0, 1).toUpperCase();
@@ -42,11 +34,6 @@ export default async function ProfilePage({
     locale: vi,
     addSuffix: true,
   });
-  const isSelf = currentUser && String(currentUser._id) === String(profile._id);
-  const isFollowing =
-    currentUser && !isSelf
-      ? (profile.followers ?? []).some((id) => String(id) === String(currentUser._id))
-      : false;
 
   return (
     <div className="flex flex-col">
@@ -67,25 +54,10 @@ export default async function ProfilePage({
         </Avatar>
       </header>
 
-      <div className="flex gap-2 border-y border-border/50 py-3">
-        {isSelf ? (
-          <Button asChild variant="outline" size="sm">
-            <Link href="/settings/profile">Chỉnh sửa hồ sơ</Link>
-          </Button>
-        ) : (
-          <FollowButton
-            targetUserId={String(profile._id)}
-            initialFollowing={isFollowing}
-            canFollow={Boolean(currentUser)}
-          />
-        )}
-      </div>
-
-      <div className="mt-4">
+      <div className="mt-4 border-t border-border/50 pt-4">
         <Feed
           initialPosts={posts}
           initialCursor={nextCursor}
-          canInteract={Boolean(currentUser)}
         />
       </div>
     </div>

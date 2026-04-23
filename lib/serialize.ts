@@ -30,9 +30,18 @@ export type SerializedPost = {
   liked: boolean;
 };
 
+type PopulatedAuthor = Pick<UserDoc, "username" | "displayName" | "image"> & { _id: Types.ObjectId };
+
 export type RawPost = Omit<PostDoc, "author"> & {
   _id: Types.ObjectId;
-  author: Pick<UserDoc, "username" | "displayName" | "image"> & { _id: Types.ObjectId };
+  author: PopulatedAuthor | null;
+};
+
+const ANON_AUTHOR: SerializedAuthor = {
+  _id: "anonymous",
+  username: null,
+  displayName: "Ẩn danh",
+  image: null,
 };
 
 export function serializePost(p: RawPost, liked = false): SerializedPost {
@@ -53,12 +62,14 @@ export function serializePost(p: RawPost, liked = false): SerializedPost {
     likesCount: p.likesCount ?? 0,
     repliesCount: p.repliesCount ?? 0,
     createdAt: new Date(p.createdAt as unknown as string).toISOString(),
-    author: {
-      _id: String(p.author._id),
-      username: p.author.username ?? null,
-      displayName: p.author.displayName,
-      image: p.author.image ?? null,
-    },
+    author: p.author
+      ? {
+          _id: String(p.author._id),
+          username: p.author.username ?? null,
+          displayName: p.author.displayName ?? "Ẩn danh",
+          image: p.author.image ?? null,
+        }
+      : ANON_AUTHOR,
     liked,
   };
 }

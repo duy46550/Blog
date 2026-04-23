@@ -16,12 +16,11 @@ const COLLAPSE_LIMIT = 280;
 
 type Props = {
   post: SerializedPost;
-  canInteract: boolean;
   replyingTo?: string | null;
   hrefDetail?: string;
 };
 
-export function PostCard({ post, canInteract, replyingTo, hrefDetail }: Props) {
+export function PostCard({ post, replyingTo, hrefDetail }: Props) {
   const { author, content } = post;
   const [expanded, setExpanded] = useState(false);
   const isLong = content.length > COLLAPSE_LIMIT;
@@ -36,7 +35,7 @@ export function PostCard({ post, canInteract, replyingTo, hrefDetail }: Props) {
   const profileHref = author.username ? `/@${author.username}` : "#";
 
   return (
-    <article className="flex gap-3 py-4">
+    <article className="flex gap-3 py-4" suppressHydrationWarning>
       <Link href={profileHref} aria-label={author.displayName}>
         <Avatar className="size-10 shrink-0">
           {author.image ? <AvatarImage src={author.image} alt="" /> : null}
@@ -44,7 +43,7 @@ export function PostCard({ post, canInteract, replyingTo, hrefDetail }: Props) {
         </Avatar>
       </Link>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col" suppressHydrationWarning>
         <header className="flex items-baseline gap-2">
           <Link href={profileHref} className="truncate text-sm font-semibold hover:underline">
             {author.displayName}
@@ -103,9 +102,7 @@ export function PostCard({ post, canInteract, replyingTo, hrefDetail }: Props) {
         <footer className="mt-3 flex items-center gap-4 text-muted-foreground">
           <LikeButton
             postId={post._id}
-            initialLiked={post.liked}
             initialCount={post.likesCount}
-            canLike={canInteract}
           />
           <Link
             href={detailHref}

@@ -17,7 +17,7 @@ const LinkPreviewSchema = new Schema(
 
 const PostSchema = new Schema(
   {
-    author: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    author: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
     content: { type: String, required: true, maxlength: 2000 },
     title: { type: String, default: null },
     slug: { type: String, unique: true, sparse: true },

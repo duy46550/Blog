@@ -1,38 +1,55 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toggleLike } from "@/app/actions/post";
+import { toggleLikeAnon } from "@/app/actions/post";
+
+function getLikedPosts(): Set<string> {
+  try {
+    const raw = localStorage.getItem("liked_posts");
+    return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function setLikedPost(postId: string, liked: boolean) {
+  const set = getLikedPosts();
+  if (liked) set.add(postId);
+  else set.delete(postId);
+  localStorage.setItem("liked_posts", JSON.stringify([...set]));
+}
 
 type Props = {
   postId: string;
-  initialLiked: boolean;
   initialCount: number;
-  canLike: boolean;
 };
 
-export function LikeButton({ postId, initialLiked, initialCount, canLike }: Props) {
-  const [liked, setLiked] = useState(initialLiked);
+export function LikeButton({ postId, initialCount }: Props) {
+  const [liked, setLiked] = useState(false);
   const [count, setCount] = useState(initialCount);
   const [isPending, startTransition] = useTransition();
 
+  useEffect(() => {
+    setLiked(getLikedPosts().has(postId));
+  }, [postId]);
+
   function onClick() {
-    if (!canLike) {
-      window.location.href = "/login";
-      return;
-    }
     const nextLiked = !liked;
     setLiked(nextLiked);
     setCount((c) => c + (nextLiked ? 1 : -1));
+    setLikedPost(postId, nextLiked);
+
     startTransition(async () => {
-      const res = await toggleLike(postId);
-      if ("liked" in res) {
-        setLiked(res.liked);
+      const res = await toggleLikeAnon(postId, nextLiked);
+      if ("likesCount" in res) {
         setCount(res.likesCount);
       } else {
+        // rollback
         setLiked(!nextLiked);
         setCount((c) => c + (nextLiked ? -1 : 1));
+        setLikedPost(postId, !nextLiked);
       }
     });
   }
