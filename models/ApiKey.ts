@@ -1,4 +1,5 @@
-import { Schema, model, models, type Model, type InferSchemaType, type Types } from "mongoose";
+import mongoose, { type Model, type InferSchemaType, type Types } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 export const API_KEY_PROVIDERS = ["anthropic", "openai", "firecrawl", "resend"] as const;
 export type ApiKeyProvider = (typeof API_KEY_PROVIDERS)[number];

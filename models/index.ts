@@ -5,3 +5,9 @@ export { Like, type LikeDoc } from "./Like";
 export { AIAgent, type AIAgentDoc } from "./AIAgent";
 export { AIRun, AI_RUN_STATUS, type AIRunDoc, type AIRunStatus } from "./AIRun";
 export { ApiKey, API_KEY_PROVIDERS, type ApiKeyDoc, type ApiKeyProvider } from "./ApiKey";
+export {
+  Notification,
+  NOTIFICATION_TYPES,
+  type NotificationDoc,
+  type NotificationType,
+} from "./Notification";

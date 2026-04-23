@@ -1,4 +1,5 @@
-import { Schema, model, models, type Model, type InferSchemaType, type Types } from "mongoose";
+import mongoose, { type Model, type InferSchemaType, type Types } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 export const AI_RUN_STATUS = ["PENDING", "RUNNING", "SUCCESS", "FAILED"] as const;
 export type AIRunStatus = (typeof AI_RUN_STATUS)[number];

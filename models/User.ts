@@ -1,4 +1,5 @@
-import { Schema, model, models, type Model, type InferSchemaType, type Types } from "mongoose";
+import mongoose, { type Model, type InferSchemaType, type Types } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 export const USER_ROLES = ["USER", "AUTHOR", "ADMIN"] as const;
 export type UserRole = (typeof USER_ROLES)[number];

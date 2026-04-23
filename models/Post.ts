@@ -1,4 +1,5 @@
-import { Schema, model, models, type Model, type InferSchemaType, type Types } from "mongoose";
+import mongoose, { type Model, type InferSchemaType, type Types } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 export const POST_STATUS = ["DRAFT", "PUBLISHED", "SCHEDULED"] as const;
 export type PostStatus = (typeof POST_STATUS)[number];
